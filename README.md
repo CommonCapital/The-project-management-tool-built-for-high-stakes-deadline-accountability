@@ -82,7 +82,7 @@ APEX is built as a high-performance monorepo designed for real-time reliability.
 ### 2. Installation
 ```bash
 # Clone the repository
-git clone https://github.com/your-org/apex.git
+git clone https://github.com/CommonCapital/The-project-management-tool-built-for-high-stakes-deadline-accountability.git
 cd apex
 
 # Install dependencies
