@@ -8,6 +8,13 @@
       "when": 1777485716872,
       "tag": "0000_productive_landau",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1782163065184,
+      "tag": "0001_bored_stryfe",
+      "breakpoints": true
     }
   ]
 }

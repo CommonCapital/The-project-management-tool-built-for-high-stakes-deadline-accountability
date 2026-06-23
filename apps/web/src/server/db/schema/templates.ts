@@ -1,5 +1,5 @@
 import { pgTable, text, timestamp, jsonb } from "drizzle-orm/pg-core";
-import { organizations, users } from "./auth";
+import { organization as organizations, user as users } from "./auth";
 
 export const projectTemplates = pgTable("project_templates", {
   id: text("id").primaryKey(),

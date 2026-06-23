@@ -1,5 +1,5 @@
 import { pgTable, text, timestamp, boolean, pgEnum } from "drizzle-orm/pg-core";
-import { organizations, users } from "./auth";
+import { organization as organizations, user as users } from "./auth";
 
 export const projectStatusEnum = pgEnum("project_status", ["active", "archived", "completed"]);
 

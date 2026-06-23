@@ -1,21 +1,26 @@
 import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
-import { organization, twoFactor } from "better-auth/plugins";
+import { organization as organizationPlugin, twoFactor } from "better-auth/plugins";
 import { db } from "../db";
+import {
+  user,
+  session,
+  account,
+  verification,
+  organization,
+  member,
+  invitation,
+  twoFactor as twoFactorTable,
+} from "../db/schema";
 
 export const auth = betterAuth({
   database: drizzleAdapter(db, {
     provider: "pg",
-    schema: {
-      user: "users",
-      session: "sessions",
-      account: "accounts",
-      verification: "verifications",
-    }
+    schema: { user, session, account, verification, organization, member, invitation, twoFactor: twoFactorTable },
   }),
   emailAndPassword: { 
     enabled: true, 
-    requireEmailVerification: true 
+    requireEmailVerification: false
   },
   // Register custom fields so they are included in the session/user type
   user: {
@@ -35,8 +40,8 @@ export const auth = betterAuth({
     }
   },
   plugins: [
-    organization({ 
-      allowUserToCreateOrganization: false 
+    organizationPlugin({
+      allowUserToCreateOrganization: false
     }),
     twoFactor({ 
       issuer: "APEX" 

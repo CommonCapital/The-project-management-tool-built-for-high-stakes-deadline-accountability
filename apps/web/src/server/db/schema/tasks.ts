@@ -1,5 +1,5 @@
 import { pgTable, text, timestamp, boolean, pgEnum, integer, doublePrecision, jsonb } from "drizzle-orm/pg-core";
-import { organizations, users } from "./auth";
+import { organization as organizations, user as users } from "./auth";
 import { projects } from "./projects";
 
 export const taskStatusEnum = pgEnum("task_status", ["todo", "in_progress", "review", "done", "blocked"]);
@@ -25,9 +25,17 @@ export const tasks = pgTable("tasks", {
   templateId: text("template_id"),
   completedAt: timestamp("completed_at"),
   completionNote: text("completion_note"),
+  scheduledStart: timestamp("scheduled_start"),
+  scheduledEnd: timestamp("scheduled_end"),
+  isCommon: boolean("is_common").notNull().default(false),
   createdAt: timestamp("created_at").notNull().defaultNow(),
   updatedAt: timestamp("updated_at").notNull().defaultNow(),
 });
+
+export const taskAssignees = pgTable("task_assignees", {
+  taskId: text("task_id").notNull().references(() => tasks.id, { onDelete: "cascade" }),
+  userId: text("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+}, (table) => ({ pk: [table.taskId, table.userId] }));
 
 export const taskDependencies = pgTable("task_dependencies", {
   taskId: text("task_id").notNull().references(() => tasks.id, { onDelete: "cascade" }),

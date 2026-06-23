@@ -1,5 +1,5 @@
 import { pgTable, text, timestamp, boolean } from "drizzle-orm/pg-core";
-import { organizations, users } from "./auth";
+import { organization as organizations, user as users } from "./auth";
 
 export const notifications = pgTable("notifications", {
   id: text("id").primaryKey(),

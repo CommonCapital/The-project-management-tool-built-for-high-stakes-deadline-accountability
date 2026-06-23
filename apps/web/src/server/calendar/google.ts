@@ -1,6 +1,6 @@
 import { google } from "googleapis";
 import { db } from "../db";
-import { users } from "../db/schema";
+import { user as users } from "../db/schema";
 import { eq } from "drizzle-orm";
 
 const oauth2Client = new google.auth.OAuth2(

@@ -1,5 +1,5 @@
 import { pgTable, text, timestamp, boolean, pgEnum, integer } from "drizzle-orm/pg-core";
-import { organizations, users } from "./auth";
+import { organization as organizations, user as users } from "./auth";
 import { projects } from "./projects";
 
 export const channelTypeEnum = pgEnum("channel_type", ["public", "private", "dm", "project"]);

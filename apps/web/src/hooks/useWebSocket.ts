@@ -4,47 +4,52 @@ import { trpc } from "@/lib/trpc";
 
 export function useWebSocket() {
   const ws = useRef<WebSocket | null>(null);
+  const reconnectRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const utils = trpc.useUtils();
 
   useEffect(() => {
-    const protocol = window.location.protocol === "https:" ? "wss:" : "ws:";
-    const host = window.location.host;
-    const url = `${protocol}//${host}`;
+    let stopped = false;
 
     const connect = () => {
-      ws.current = new WebSocket(url);
+      if (stopped) return;
+
+      const protocol = window.location.protocol === "https:" ? "wss:" : "ws:";
+      const url = `${protocol}//${window.location.host}`;
+
+      try {
+        ws.current = new WebSocket(url);
+      } catch {
+        return;
+      }
 
       ws.current.onopen = () => {
-        console.log("[WS] Connected");
+        if (process.env.NODE_ENV === "development") console.log("[WS] Connected");
       };
 
       ws.current.onmessage = (event) => {
-        const { type, data } = JSON.parse(event.data);
-
-        switch (type) {
-          case "chat":
-            // Invalidate chat messages cache
-            utils.chat.getMessages.invalidate({ channelId: data.channelId });
-            break;
-          case "notifications":
-            // Invalidate notification count and list
-            utils.notifications.getUnreadCount.invalidate();
-            utils.notifications.list.invalidate();
-            toast.info(data.title, { description: data.body });
-            break;
-          case "task_update":
-            utils.tasks.list.invalidate();
-            break;
-        }
+        try {
+          const { type, data } = JSON.parse(event.data);
+          switch (type) {
+            case "chat":
+              utils.chat.getMessages.invalidate({ channelId: data.channelId });
+              break;
+            case "notifications":
+              utils.notifications.getUnreadCount.invalidate();
+              utils.notifications.list.invalidate();
+              toast.info(data.title, { description: data.body });
+              break;
+            case "task_update":
+              utils.tasks.list.invalidate();
+              break;
+          }
+        } catch {}
       };
 
       ws.current.onclose = () => {
-        console.log("[WS] Disconnected. Reconnecting in 3s...");
-        setTimeout(connect, 3000);
+        if (!stopped) reconnectRef.current = setTimeout(connect, 5000);
       };
 
-      ws.current.onerror = (err) => {
-        console.error("[WS] Error:", err);
+      ws.current.onerror = () => {
         ws.current?.close();
       };
     };
@@ -52,6 +57,8 @@ export function useWebSocket() {
     connect();
 
     return () => {
+      stopped = true;
+      if (reconnectRef.current) clearTimeout(reconnectRef.current);
       ws.current?.close();
     };
   }, [utils]);

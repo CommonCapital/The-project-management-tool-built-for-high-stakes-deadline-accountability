@@ -1,5 +1,5 @@
 import { db } from "../db";
-import { notifications, users } from "../db/schema";
+import { notifications, user as users } from "../db/schema";
 import { redis } from "../redis";
 import nodemailer from "nodemailer";
 import { eq } from "drizzle-orm";
